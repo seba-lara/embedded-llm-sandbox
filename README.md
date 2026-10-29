@@ -13,9 +13,8 @@ La infraestructura está completamente dockerizada y desacoplada en **4 contened
 
 ```text
 +------------------------------------------------------------------------------------+
-
-|                                  RAG_NETWORK (Docker)                              |
-|                                                                                    |
+|                                 RAG_NETWORK (Docker)                              |
+|                                                                                   |
 |  +--------------------+      +--------------------+      +---------------------+  |
 |  | 1. ollama_service  | <--- |   2. fastapi_api   | <--- | 3. streamlit_client |  |
 |  | (Inferencia LLM)   |      | (Backend + MiniLM) |      | (Interfaz de Chat)  |  |
@@ -53,13 +52,13 @@ El siguiente flujo describe cómo interactúan los componentes desde que el usua
    │
    ├─► [1. ollama_service (Llama 3.2:1b)]
    │      │
-   │      └─► (5. Envía Pregunta + Contexto de Kaggle. El LLM redacta la respuesta final)
+   │      └─► (5. Envía Pregunta + Contexto. El LLM redacta la respuesta final)
    │
    ├─► [5. postgres_sql]
    │      │
    │      └─► (6. Guarda de forma asíncrona la pregunta, respuesta y latencia para analítica)
    │
-   ▼ (7. Devuelve el JSON con la respuesta final redactada)
+   ▼ (7. Devuelve la respuesta final redactada)
 [3. streamlit_client] ──► [Usuario ve la respuesta en pantalla]
 ```
 
@@ -71,7 +70,7 @@ Para levantar y construir el código interno de cada contenedor, se deben utiliz
 
 ### Contenedor 1: `ollama_service` (Inferencia LLM)
 *   **Base:** Imagen oficial de Docker `ollama/ollama:latest`.
-*   **Modelo cargado:** `llama3.2:1b` (Optimizado para ejecución rápida en CPU).
+*   **Modelo cargado:** ´´Por confirmar´.
 
 ### Contenedor 2: `fastapi_api` (Backend + MiniLM)
 *   **Base:** Imagen `python:3.10-slim`.
@@ -101,31 +100,22 @@ Para levantar y construir el código interno de cada contenedor, se deben utiliz
 Este diagrama muestra cómo se distribuyen los componentes dentro de los componentes físicos de tu computadora de desarrollo (**Acer Aspire / Fedora 44**):
 
 ```text
-+---------------------------------------------------------------------------+
-
-| 💻 HARDWARE FÍSICO (Laptop Acer Aspire - CPU Ryzen)                       |
-|                                                                           |
-|  +---------------------------------------------------------------------+  |
-|  | 🐧 SISTEMA OPERATIVO (Fedora 44 con Kernel Linux Nativo)            |  |
-|  |                                                                     |  |
-|  |  +---------------------------------------------------------------+  |  |
-|  |  | 🧠 MEMORIA RAM (Asignación estimada de recursos en ejecución)  |  |  |
-|  |  |                                                               |  |  |
-|  |  | [Ollama (Llama 3.2)]  ~1.2 GB RAM (Uso intensivo de hilos)    |  |  |
-|  |  | [FastAPI + MiniLM]    ~800 MB RAM (Carga del modelo en caché) |  |  |
-|  |  | [ChromaDB + Postgres] ~500 MB RAM                             |  |  |
-|  |  | [Streamlit UI]        ~200 MB RAM                             |  |  |
-|  |  | ------------------------------------------------------------- |  |  |
-|  |  | Total Estimado:       ~2.7 GB - 3.2 GB RAM                    |  |  |
-|  |  +---------------------------------------------------------------+  |  |
-|  +---------------------------------------------------------------------+  |
-+---------------------------------------------------------------------------+
++-------------------------------------------------------------------------------------+
+| 💻 HARDWARE FÍSICO (Laptop Acer Aspire - CPU Ryzen)                                 |
+|                                                                                     |
+|  +-------------------------------------------------------------------------------+  |
+|  | 🐧 SISTEMA OPERATIVO (Fedora 44 con Kernel Linux Nativo)                      |  |
+|  |                                                                               |  |
+|  |  +-------------------------------------------------------------------------+  |  |
+|  |  | 🧠 MEMORIA RAM (Asignación estimada de recursos en ejecución)           |  |  |
+|  |  |                                                                         |  |  |
+|  |  | [Ollama (LLM por confirmar)]  ~1.2 GB RAM (Uso intensivo de hilos)      |  |  |
+|  |  | [FastAPI + MiniLM]    ~800 MB RAM (Carga del modelo en caché)           |  |  |
+|  |  | [ChromaDB + Postgres] ~500 MB RAM                                       |  |  |
+|  |  | [Streamlit UI]        ~200 MB RAM                                       |  |  |
+|  |  | ----------------------------------------------------------------------- |  |  |
+|  |  | Total Estimado:       ~2.7 GB - 3.2 GB RAM                              |  |  |
+|  |  +-------------------------------------------------------------------------+  |  |
+|  +-------------------------------------------------------------------------------+  |
++-------------------------------------------------------------------------------------+
 ```
-
----
-
-## 🏁 Próximos Pasos sugeridos para la fabricación
-
-1.  **Paso 1:** Crear la estructura de carpetas en tu entorno Fedora.
-2.  **Paso 2:** Escribir el script aislado en Python que use `sentence-transformers` con MiniLM para verificar que tu CPU genera los embeddings de prueba correctamente.
-3.  **Paso 3:** Descargar el dataset de Kaggle y guardarlo en la carpeta de inicialización.
